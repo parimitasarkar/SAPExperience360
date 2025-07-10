@@ -405,128 +405,119 @@
         </div>
     </div>
 
-    <script>
-        // Form submission handler
-        document.getElementById('feedbackForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Get form data
-            const formData = new FormData(this);
-            const responses = {};
-            
-            for (let [key, value] of formData.entries()) {
-                responses[key] = value;
-            }
-            
-            // Add timestamp
-            responses.timestamp = new Date().toISOString();
-            responses.session_id = 'SAP_EXP360_' + Date.now();
-            
-            // Store responses (in a real implementation, this would go to a database)
-            let allResponses = JSON.parse(localStorage.getItem('sap_feedback_responses') || '[]');
-            allResponses.push(responses);
-            localStorage.setItem('sap_feedback_responses', JSON.stringify(allResponses));
-            
-            // Show success message
-            document.getElementById('feedbackForm').style.display = 'none';
-            document.getElementById('successMessage').style.display = 'block';
-            
-            // Scroll to success message
-            document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth' });
-            
-            // In a real implementation, you would send this data to your server
-            console.log('Feedback submitted:', responses);
-        });
+   <!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.3.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.3.0/firebase-firestore-compat.js"></script>
 
-        // Admin function to download responses (for organizers)
-        function downloadResponses() {
-            const responses = JSON.parse(localStorage.getItem('sap_feedback_responses') || '[]');
-            
-            if (responses.length === 0) {
-                alert('No responses to download yet.');
-                return;
-            }
-            
-            // Convert to CSV
-            const headers = ['Timestamp', 'Session ID', 'Name', 'Email', 'Scrum Team', 'Session Date', 'Overall Rating', 'Expectations Met', 'Improvements', 'Additional Feedback'];
-            const csvContent = [
-                headers.join(','),
-                ...responses.map(r => [
-                    r.timestamp,
-                    r.session_id,
-                    `"${r.name}"`,
-                    r.email,
-                    `"${r.scrum_team || 'Not specified'}"`,
-                    r.session_date,
-                    r.overall_rating,
-                    r.expectations,
-                    `"${r.improvements}"`,
-                    `"${r.additional_feedback || ''}"`
-                ].join(','))
-            ].join('\n');
-            
-            // Download file
-            const blob = new Blob([csvContent], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `SAP_Experience360_Feedback_${new Date().toISOString().split('T')[0]}.csv`;
-            a.click();
-            window.URL.revokeObjectURL(url);
-        }
+<script>
+  // Firebase Config
+  const firebaseConfig = {
+    apiKey: "AIzaSyBoBxeFbCDl2mQruYgKo_8IPWxVXTJUOCk",
+    authDomain: "sapexperience360-feedback.firebaseapp.com",
+    projectId: "sapexperience360-feedback",
+    storageBucket: "sapexperience360-feedback.firebasestorage.app",
+    messagingSenderId: "227190394986",
+    appId: "1:227190394986:web:d5c2fd1ee292b4c4f6fa13",
+    measurementId: "G-WHG7LJ7H8Q"
+  };
 
-        // Admin function to clear responses
-        function clearResponses() {
-            if (confirm('Are you sure you want to clear all responses? This action cannot be undone.')) {
-                localStorage.removeItem('sap_feedback_responses');
-                alert('All responses have been cleared.');
-            }
-        }
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
 
-        // Double-click on SAP logo to access admin functions
-        document.querySelector('.sap-logo').addEventListener('dblclick', function() {
-            const password = prompt('Enter admin password:');
-            if (password === 'sap360admin') {
-                const action = prompt('Enter action (download/clear):');
-                if (action === 'download') {
-                    downloadResponses();
-                } else if (action === 'clear') {
-                    clearResponses();
-                }
-            }
-        });
+  // Form submission
+  document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+    e.preventDefault();
 
-        // Auto-save draft responses
-        const inputs = document.querySelectorAll('input, textarea, select');
-        inputs.forEach(input => {
-            input.addEventListener('input', function() {
-                const draftData = {};
-                inputs.forEach(inp => {
-                    if (inp.type === 'radio') {
-                        if (inp.checked) draftData[inp.name] = inp.value;
-                    } else {
-                        draftData[inp.name] = inp.value;
-                    }
-                });
-                localStorage.setItem('sap_feedback_draft', JSON.stringify(draftData));
-            });
-        });
+    const formData = new FormData(this);
+    const responses = {};
 
-        // Load draft on page load
-        window.addEventListener('load', function() {
-            const draft = JSON.parse(localStorage.getItem('sap_feedback_draft') || '{}');
-            for (const [key, value] of Object.entries(draft)) {
-                const input = document.querySelector(`[name="${key}"]`);
-                if (input) {
-                    if (input.type === 'radio') {
-                        const radioInput = document.querySelector(`[name="${key}"][value="${value}"]`);
-                        if (radioInput) radioInput.checked = true;
-                    } else {
-                        input.value = value;
-                    }
-                }
-            }
-        });
-    </script>
+    for (let [key, value] of formData.entries()) {
+      responses[key] = value;
+    }
+
+    responses.timestamp = new Date().toISOString();
+    responses.session_id = 'SAP_EXP360_' + Date.now();
+
+    // Store in Firebase
+    db.collection('feedback_responses').add(responses)
+      .then(() => {
+        document.getElementById('feedbackForm').style.display = 'none';
+        document.getElementById('successMessage').style.display = 'block';
+        document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth' });
+      })
+      .catch((error) => {
+        console.error('Error saving feedback:', error);
+        alert('Submission failed. Please try again.');
+      });
+  });
+
+  // Admin functions
+  function downloadResponses() {
+    db.collection("feedback_responses").get().then(snapshot => {
+      const responses = [];
+      snapshot.forEach(doc => responses.push(doc.data()));
+
+      if (responses.length === 0) {
+        alert("No responses found.");
+        return;
+      }
+
+      const headers = ['Timestamp', 'Session ID', 'Name', 'Email', 'Scrum Team', 'Session Date', 'Overall Rating', 'Expectations Met', 'Improvements', 'Additional Feedback'];
+      const csvContent = [
+        headers.join(','),
+        ...responses.map(r => [
+          r.timestamp,
+          r.session_id,
+          `"${r.name}"`,
+          r.email,
+          `"${r.scrum_team || 'Not specified'}"`,
+          r.session_date,
+          r.overall_rating,
+          r.expectations,
+          `"${r.improvements}"`,
+          `"${r.additional_feedback || ''}"`
+        ].join(','))
+      ].join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `SAP_Experience360_Feedback_${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    }).catch(err => {
+      console.error('Download error:', err);
+      alert('Could not download responses.');
+    });
+  }
+
+  function clearResponses() {
+    if (confirm('Are you sure you want to delete ALL feedback responses?')) {
+      db.collection("feedback_responses").get().then(snapshot => {
+        const batch = db.batch();
+        snapshot.docs.forEach(doc => batch.delete(doc.ref));
+        return batch.commit();
+      }).then(() => {
+        alert('All responses deleted.');
+      }).catch(err => {
+        console.error('Error clearing:', err);
+        alert('Failed to clear responses.');
+      });
+    }
+  }
+
+  // Double-click on SAP logo triggers admin
+  document.querySelector('.sap-logo').addEventListener('dblclick', function () {
+    const pwd = prompt('Enter admin password:');
+    if (pwd === 'sap360admin') {
+      const action = prompt('Enter action (download / clear):').toLowerCase();
+      if (action === 'download') downloadResponses();
+      else if (action === 'clear') clearResponses();
+      else alert('Invalid action.');
+    }
+  });
+</script>
 </body>
 </html>
