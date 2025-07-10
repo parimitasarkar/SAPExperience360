@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAP Experience360 Storytelling Session - Feedback Form</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0078d4 0%, #005a9c 50%, #003d6b 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 120, 212, 0.2);
+            padding: 40px;
+            max-width: 700px;
+            width: 100%;
+            animation: fadeInUp 0.8s ease-out;
+            border: 1px solid rgba(0, 120, 212, 0.1);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #0078d4;
+        }
+
+        .sap-logo {
+            width: 120px;
+            height: 60px;
+            margin: 0 auto 20px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .sap-logo svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 4px 15px rgba(0, 120, 212, 0.3));
+        }
+
+        h1 {
+            color: #003d6b;
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            color: #0078d4;
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #003d6b;
+            font-size: 16px;
+        }
+
+        .required {
+            color: #e74c3c;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="date"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e6ed;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="date"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #0078d4;
+            box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.15);
+            transform: translateY(-2px);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .rating-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .rating-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 15px;
+            background: #f8f9fa;
+            border: 2px solid #e0e6ed;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .rating-option:hover {
+            background: #0078d4;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 120, 212, 0.4);
+        }
+
+        .rating-option input[type="radio"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .rating-option input[type="radio"]:checked + span {
+            font-weight: bold;
+        }
+
+        .rating-option:has(input[type="radio"]:checked) {
+            background: #0078d4;
+            color: white;
+            border-color: #0078d4;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #0078d4, #005a9c);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 120, 212, 0.4);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 120, 212, 0.5);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .qr-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            text-align: center;
+            border: 2px dashed #667eea;
+        }
+
+        .qr-code {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 15px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            background-image: 
+                radial-gradient(circle at 25% 25%, #667eea 2px, transparent 2px),
+                radial-gradient(circle at 75% 75%, #764ba2 2px, transparent 2px),
+                radial-gradient(circle at 25% 75%, #667eea 1px, transparent 1px),
+                radial-gradient(circle at 75% 25%, #764ba2 1px, transparent 1px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px, 0 10px, 10px 0;
+        }
+
+        .qr-text {
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .qr-url {
+            color: #667eea;
+            font-size: 14px;
+            word-break: break-all;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, #0078d4, #005a9c);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 20px;
+            display: none;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .privacy-note {
+            background: #e7f3ff;
+            border: 1px solid #0078d4;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #003d6b;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .rating-group {
+                flex-direction: column;
+            }
+            
+            .rating-option {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="sap-logo">
+                <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="sapGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#0078d4;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#005a9c;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <!-- SAP anvil shape -->
+                    <path d="M 0 20 L 0 80 L 140 80 L 200 20 L 200 0 L 0 0 Z" fill="url(#sapGradient)"/>
+                    <!-- SAP text -->
+                    <text x="70" y="55" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="white" text-anchor="middle">SAP</text>
+                </svg>
+            </div>
+            <h1>Experience360 Storytelling Session</h1>
+            <p class="subtitle">Your Feedback Matters</p>
+        </div>
+
+        <form id="feedbackForm">
+            <div class="form-group">
+                <label for="name">Name <span class="required">*</span></label>
+                <input type="text" id="name" name="name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email <span class="required">*</span></label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="scrum_team">Scrum Team Name</label>
+                <input type="text" id="scrum_team" name="scrum_team" placeholder="Enter your Scrum team name">
+            </div>
+
+            <div class="form-group">
+                <label for="session_date">Session Date <span class="required">*</span></label>
+                <input type="date" id="session_date" name="session_date" required>
+            </div>
+
+            <div class="form-group">
+                <label>How did the session go overall? <span class="required">*</span></label>
+                <div class="rating-group">
+                    <label class="rating-option">
+                        <input type="radio" name="overall_rating" value="excellent" required>
+                        <span>Excellent</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="overall_rating" value="good" required>
+                        <span>Good</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="overall_rating" value="average" required>
+                        <span>Average</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="overall_rating" value="poor" required>
+                        <span>Poor</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Did the session meet your expectations? <span class="required">*</span></label>
+                <div class="rating-group">
+                    <label class="rating-option">
+                        <input type="radio" name="expectations" value="exceeded" required>
+                        <span>Exceeded</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="expectations" value="met" required>
+                        <span>Met</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="expectations" value="partially" required>
+                        <span>Partially</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="expectations" value="not_met" required>
+                        <span>Not Met</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="improvements">What do you think we could have more as part of the session so that it benefits others? <span class="required">*</span></label>
+                <textarea id="improvements" name="improvements" placeholder="Please share your suggestions for improving future sessions..." required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="additional_feedback">Additional Comments or Feedback</label>
+                <textarea id="additional_feedback" name="additional_feedback" placeholder="Any other thoughts or suggestions you'd like to share..."></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn">Submit Feedback</button>
+        </form>
+
+        <div class="success-message" id="successMessage">
+            <h3>Thank you for your feedback!</h3>
+            <p>Your response has been recorded and will help us improve future sessions.</p>
+        </div>
+
+
+
+        <div class="privacy-note">
+            <strong>Privacy Notice:</strong> This feedback is confidential and will only be accessible to session organizers and authorized collaborators. Your responses help us improve our training programs.
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2025 SAP Experience360 Storytelling Session | Feedback Collection System</p>
+        </div>
+    </div>
+
+    <script>
+        // Form submission handler
+        document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form data
+            const formData = new FormData(this);
+            const responses = {};
+            
+            for (let [key, value] of formData.entries()) {
+                responses[key] = value;
+            }
+            
+            // Add timestamp
+            responses.timestamp = new Date().toISOString();
+            responses.session_id = 'SAP_EXP360_' + Date.now();
+            
+            // Store responses (in a real implementation, this would go to a database)
+            let allResponses = JSON.parse(localStorage.getItem('sap_feedback_responses') || '[]');
+            allResponses.push(responses);
+            localStorage.setItem('sap_feedback_responses', JSON.stringify(allResponses));
+            
+            // Show success message
+            document.getElementById('feedbackForm').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'block';
+            
+            // Scroll to success message
+            document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth' });
+            
+            // In a real implementation, you would send this data to your server
+            console.log('Feedback submitted:', responses);
+        });
+
+        // Admin function to download responses (for organizers)
+        function downloadResponses() {
+            const responses = JSON.parse(localStorage.getItem('sap_feedback_responses') || '[]');
+            
+            if (responses.length === 0) {
+                alert('No responses to download yet.');
+                return;
+            }
+            
+            // Convert to CSV
+            const headers = ['Timestamp', 'Session ID', 'Name', 'Email', 'Scrum Team', 'Session Date', 'Overall Rating', 'Expectations Met', 'Improvements', 'Additional Feedback'];
+            const csvContent = [
+                headers.join(','),
+                ...responses.map(r => [
+                    r.timestamp,
+                    r.session_id,
+                    `"${r.name}"`,
+                    r.email,
+                    `"${r.scrum_team || 'Not specified'}"`,
+                    r.session_date,
+                    r.overall_rating,
+                    r.expectations,
+                    `"${r.improvements}"`,
+                    `"${r.additional_feedback || ''}"`
+                ].join(','))
+            ].join('\n');
+            
+            // Download file
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `SAP_Experience360_Feedback_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Admin function to clear responses
+        function clearResponses() {
+            if (confirm('Are you sure you want to clear all responses? This action cannot be undone.')) {
+                localStorage.removeItem('sap_feedback_responses');
+                alert('All responses have been cleared.');
+            }
+        }
+
+        // Double-click on SAP logo to access admin functions
+        document.querySelector('.sap-logo').addEventListener('dblclick', function() {
+            const password = prompt('Enter admin password:');
+            if (password === 'sap360admin') {
+                const action = prompt('Enter action (download/clear):');
+                if (action === 'download') {
+                    downloadResponses();
+                } else if (action === 'clear') {
+                    clearResponses();
+                }
+            }
+        });
+
+        // Auto-save draft responses
+        const inputs = document.querySelectorAll('input, textarea, select');
+        inputs.forEach(input => {
+            input.addEventListener('input', function() {
+                const draftData = {};
+                inputs.forEach(inp => {
+                    if (inp.type === 'radio') {
+                        if (inp.checked) draftData[inp.name] = inp.value;
+                    } else {
+                        draftData[inp.name] = inp.value;
+                    }
+                });
+                localStorage.setItem('sap_feedback_draft', JSON.stringify(draftData));
+            });
+        });
+
+        // Load draft on page load
+        window.addEventListener('load', function() {
+            const draft = JSON.parse(localStorage.getItem('sap_feedback_draft') || '{}');
+            for (const [key, value] of Object.entries(draft)) {
+                const input = document.querySelector(`[name="${key}"]`);
+                if (input) {
+                    if (input.type === 'radio') {
+                        const radioInput = document.querySelector(`[name="${key}"][value="${value}"]`);
+                        if (radioInput) radioInput.checked = true;
+                    } else {
+                        input.value = value;
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
